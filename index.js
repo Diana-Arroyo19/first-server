@@ -31,6 +31,48 @@ const server = http.createServer((req, res) => {
       // Cerrando la comunicacion
       res.end();
       break;
+
+      //CASO DEL AUTOR DIANA ARROYO 
+      case '/author':
+      res.setHeader('Content-Type', 'text/html');
+      res.write(`
+      <html>
+        <head>
+        <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+          <title>My App Author</title>
+        </head>
+        <body>
+          <h1 style="color: #08b113">-DIANA ARROYO RODRIGUEZ-</h1>   
+          <p style="color: #7cd221">Intentando 🧪 Actividad: Enrutado </p>
+        </body>
+      </html>
+      `);
+      console.log(`📣 Respondiendo: 200 ${req.url} ${req.method}`);
+      res.statusCode = 200;
+      res.end();
+      break; 
+
+      //MANDAR A LLAMAR EL FAVICON
+      case '/favicon.ico':
+        res.setHeader('Content-Type', 'text/html');
+        res.write(`
+        <html>
+          <head>
+          <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+            <title>My App Author</title>
+          </head>
+          <body>
+            <h1 style="color: #08b113">-favicon-</h1>   
+            <p style="color: #7cd221">Insertando un fabicon todo pixeleado</p>
+            <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
+          </body>
+        </html>
+        `);
+        console.log(`📣 Respondiendo: 200 ${req.url} ${req.method}`);
+        res.statusCode = 200;
+        res.end();
+        break; 
+
     default:
       // Peticion raiz
       // Estableciendo cabeceras
