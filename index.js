@@ -1,6 +1,10 @@
 import http from "http";
+import path from "path";
+import { promises as fs } from 'fs';
 
-const server = http.createServer((req, res) => {
+global["__dirname"] = path.dirname(new URL(import.meta.url).pathname);
+
+const server = http.createServer(async (req, res) => {
   // Desestructurando de "req"
   let { url, method } = req;
 
@@ -16,7 +20,7 @@ const server = http.createServer((req, res) => {
       res.write(`
       <html>
         <head>
-          <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
           <title>My App</title>
         </head>
         <body> 
@@ -32,46 +36,43 @@ const server = http.createServer((req, res) => {
       res.end();
       break;
 
-      //CASO DEL AUTOR DIANA ARROYO 
-      case '/author':
+      // PARTE DEL AUTOR
+    case '/author':
       res.setHeader('Content-Type', 'text/html');
+      
       res.write(`
-      <html>
-        <head>
-        <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
-          <title>My App Author</title>
-        </head>
-        <body>
-          <h1 style="color: #08b113">-DIANA ARROYO RODRIGUEZ-</h1>   
-          <p style="color: #7cd221">Intentando 🧪 Actividad: Enrutado </p>
-        </body>
-      </html>
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+    <title>My App Author</title>
+</head>
+<body style="text-align: center;">
+    <font face="Monospace">
+    <h1 style="color: #333;">&#127775; -AUTHOR- &#127775;</h1>
+    <p style="color: #5DADE2;">-DIANA ARROYO RODRIGUEZ-</p>
+    <p style="color: #5DADE2;">ESTUDIANTE DE INGENIERIA EN TICS</p> 
+    <p style="color: #2471A3">&#129514 Actividad: Enrutado </p>
+    </font>
+    <img width="300px" src="/workspaces/first-server/writer.png" alt="Foto Diana Arroyo">
+</body>
+</html>
       `);
       console.log(`📣 Respondiendo: 200 ${req.url} ${req.method}`);
       res.statusCode = 200;
       res.end();
-      break; 
+      break;
 
-      //MANDAR A LLAMAR EL FAVICON
-      case '/favicon.ico':
-        res.setHeader('Content-Type', 'text/html');
-        res.write(`
-        <html>
-          <head>
-          <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
-            <title>My App Author</title>
-          </head>
-          <body>
-            <h1 style="color: #08b113">-favicon-</h1>   
-            <p style="color: #7cd221">Insertando un fabicon todo pixeleado</p>
-            <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
-          </body>
-        </html>
-        `);
-        console.log(`📣 Respondiendo: 200 ${req.url} ${req.method}`);
-        res.statusCode = 200;
-        res.end();
-        break; 
+      // PARTE DEL FAVICON
+    case "/favicon.ico":
+      const faviconPath = path.join(__dirname, 'program.ico');
+        const data = await fs.readFile(faviconPath);
+        res.writeHead(200, {'Content-Type': 'image/x-icon'});
+        res.end(data);
+      break
 
     default:
       // Peticion raiz
@@ -81,7 +82,7 @@ const server = http.createServer((req, res) => {
       res.write(`
       <html>
         <head>
-          <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
           <title>My App</title>
         </head>
         <body> 
