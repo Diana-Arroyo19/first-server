@@ -11,6 +11,7 @@ const server = http.createServer(async (req, res) => {
   console.log(`📣 CLIENT-REQUEST: ${req.url} ${req.method}`);
 
   // Enrutando peticiones
+  // Enrutando peticiones
   switch (url) {
     case '/':
       // Peticion raiz
@@ -20,12 +21,54 @@ const server = http.createServer(async (req, res) => {
       res.write(`
       <html>
         <head>
-        <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+          <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
           <title>My App</title>
+          <style>
+            body {
+              background-color: #ECF0F1;
+              font-family: Arial, sans-serif;
+            }
+            h1, h2 {
+              color: #3498DB;
+              text-align: center;
+              margin-top: 50px;
+            }
+            form {
+              margin-top: 30px;
+              text-align: center;
+            }
+            input[type="text"] {
+              width: 300px;
+              padding: 10px;
+              border: none;
+              border-radius: 5px;
+              box-shadow: 0px 0px 5px #3498DB;
+              outline: none;
+            }
+            button[type="submit"] {
+              background-color: #3498DB;
+              color: #fff;
+              border: none;
+              border-radius: 5px;
+              padding: 10px 20px;
+              cursor: pointer;
+              box-shadow: 0px 0px 5px #3498DB;
+              outline: none;
+            }
+            button[type="submit"]:hover {
+              background-color: #2980B9;
+            }
+          </style>
         </head>
         <body> 
-          <h1 style="color: #333">Hello from my server</h1>
-          <p style="color: #34495E">Estas en el recurso raiz.</p>
+          <h1>Hello from my server</h1>
+          <h2>Ingresa un mensaje</h2>
+          <div>
+            <form action="/message" method="POST">
+              <input type="text" name="message">
+              <button type="submit">Send</button>
+            </form>
+          </div>
         </body>
       </html>
       `);
@@ -36,10 +79,10 @@ const server = http.createServer(async (req, res) => {
       res.end();
       break;
 
-      // PARTE DEL AUTOR
+    // PARTE DEL AUTOR
     case '/author':
       res.setHeader('Content-Type', 'text/html');
-      
+
       res.write(`
       <!DOCTYPE html>
 <html lang="en">
@@ -47,7 +90,7 @@ const server = http.createServer(async (req, res) => {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+    <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
     <title>My App Author</title>
 </head>
 <body style="text-align: center;">
@@ -57,7 +100,7 @@ const server = http.createServer(async (req, res) => {
     <p style="color: #5DADE2;">ESTUDIANTE DE INGENIERIA EN TICS</p> 
     <p style="color: #2471A3">&#129514 Actividad: Enrutado </p>
     </font>
-    <img width="300px" src="/workspaces/first-server/writer.png" alt="Foto Diana Arroyo">
+    <img width="300px" src="writer.png" alt="Foto Diana Arroyo">
 </body>
 </html>
       `);
@@ -66,27 +109,85 @@ const server = http.createServer(async (req, res) => {
       res.end();
       break;
 
-      // PARTE DEL FAVICON
+    // PARTE DEL FAVICON
     case "/favicon.ico":
       const faviconPath = path.join(__dirname, 'program.ico');
-        const data = await fs.readFile(faviconPath);
-        res.writeHead(200, {'Content-Type': 'image/x-icon'});
-        res.end(data);
+      const data = await fs.readFile(faviconPath);
+      res.writeHead(200, { 'Content-Type': 'image/x-icon' });
+      res.end(data);
       break
 
-      //MENSAJE
-      case "/message":
+    //MENSAJE
+    case "/message":
       // Verificando si es post
       if (method === "POST") {
-        // Procesa el formulario
-        res.statusCode = 200;
-        res.write("🎉 Endpoint Funcionando!!! 🎉");
+        // Se crea una variable para almacenar los
+        // Datos entrantes del cliente
+        let body = "";
+        // Se registra un manejador de eventos
+        // Para la recepción de datos
+        req.on("data", (data => {
+          body += data;
+          if (body.length > 1e6) return req.socket.destroy();
+        }));
+        // Se registra una manejador de eventos
+        // para el termino de recepción de datos
+        req.on("end", () => {
+          // Procesa el formulario
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "text/html");
+          // Mediante URLSearchParams se extraen
+          // los campos del formulario
+          const params = new URLSearchParams(body);
+          // Se construye un objeto a partir de los datos
+          // en la variable params
+          const parsedParams = Object.fromEntries(params);
+          res.write(`
+          <html>
+            <head>
+              <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
+              <title>My App</title>
+              <style>
+                body {
+                  background-color: #f9f9f9;
+                  font-family: Arial, sans-serif;
+                }
+                h1 {
+                  color: #e74c3c;
+                  font-size: 48px;
+                  margin-top: 50px;
+                  text-align: center;
+                }
+                p {
+                  font-size: 24px;
+                  color: #7f8c8d;
+                  text-align: center;
+                  margin-top: 20px;
+                }
+                .error-message {
+                  font-size: 18px;
+                  color: #95a5a6;
+                  text-align: center;
+                  margin-top: 20px;
+                }
+              </style>
+            </head>
+            <body> 
+              <h1 style="color: #333">SERVER MESSAGE RECIEVED &#128172</h1>
+              <p>${parsedParams.message}</p>
+            </body>
+          </html>
+          `);
+          // Se finaliza la conexion
+          return res.end();
+        })
       } else {
         res.statusCode = 404;
         res.write("404: Endpoint no encontrado")
+        res.end();
       }
-			res.end();
       break;
+
 
     default:
       // Peticion raiz
@@ -96,7 +197,7 @@ const server = http.createServer(async (req, res) => {
       res.write(`
       <html>
         <head>
-        <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/fluency/256/domain.png">
+        <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
           <title>My App</title>
         </head>
         <body> 
@@ -112,8 +213,8 @@ const server = http.createServer(async (req, res) => {
       res.end();
       break;
   }
-}); 
+});
 
 server.listen(3000, "0.0.0.0", () => {
-  console.log("👩‍🍳 Servidor escuchando en http://localhost:3000"); 
+  console.log("👩‍🍳 Servidor escuchando en http://localhost:3000");
 });
