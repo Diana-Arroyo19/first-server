@@ -25,11 +25,12 @@ const server = http.createServer(async (req, res) => {
           <title>My App</title>
           <style>
             body {
-              background-color: #ECF0F1;
+              background: rgb(142,70,235);
+background: linear-gradient(0deg, rgba(142,70,235,1) 20%, rgba(131,83,233,0.46186396922050066) 100%);
               font-family: Arial, sans-serif;
             }
             h1, h2 {
-              color: #3498DB;
+              color: #000000;
               text-align: center;
               margin-top: 50px;
             }
@@ -42,17 +43,17 @@ const server = http.createServer(async (req, res) => {
               padding: 10px;
               border: none;
               border-radius: 5px;
-              box-shadow: 0px 0px 5px #3498DB;
+              box-shadow: 0px 0px 5px #000000;
               outline: none;
             }
             button[type="submit"] {
-              background-color: #3498DB;
+              background-color: #000000;
               color: #fff;
               border: none;
               border-radius: 5px;
               padding: 10px 20px;
               cursor: pointer;
-              box-shadow: 0px 0px 5px #3498DB;
+              box-shadow: 0px 0px 5px #000000;
               outline: none;
             }
             button[type="submit"]:hover {
@@ -132,52 +133,22 @@ const server = http.createServer(async (req, res) => {
         }));
         // Se registra una manejador de eventos
         // para el termino de recepción de datos
-        req.on("end", () => {
+        req.on("end", async() => {
           // Procesa el formulario
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "text/html");
           // Mediante URLSearchParams se extraen
           // los campos del formulario
           const params = new URLSearchParams(body);
           // Se construye un objeto a partir de los datos
           // en la variable params
           const parsedParams = Object.fromEntries(params);
-          res.write(`
-          <html>
-            <head>
-              <link rel="icon" type="image/x-icon" sizes="32x32" href="/favicon.ico">
-              <title>My App</title>
-              <style>
-                body {
-                  background-color: #f9f9f9;
-                  font-family: Arial, sans-serif;
-                }
-                h1 {
-                  color: #e74c3c;
-                  font-size: 48px;
-                  margin-top: 50px;
-                  text-align: center;
-                }
-                p {
-                  font-size: 24px;
-                  color: #7f8c8d;
-                  text-align: center;
-                  margin-top: 20px;
-                }
-                .error-message {
-                  font-size: 18px;
-                  color: #95a5a6;
-                  text-align: center;
-                  margin-top: 20px;
-                }
-              </style>
-            </head>
-            <body> 
-              <h1 style="color: #333">SERVER MESSAGE RECIEVED &#128172</h1>
-              <p>${parsedParams.message}</p>
-            </body>
-          </html>
-          `);
+
+          // ALMACENAR EL MENSAJE EN UN ARCHIVO
+          await fs.writeFile('message.txt',parsedParams.message);
+          // ESTABLCER CODIGO DE RESPUESTA PRA REDIRECCIONAMIENTO
+          res.statusCode = 302;
+          // ESTABLECIENRO REDIRECCIONAMIENTO
+          res.setHeader('Location','/');
+
           // Se finaliza la conexion
           return res.end();
         })
@@ -187,8 +158,6 @@ const server = http.createServer(async (req, res) => {
         res.end();
       }
       break;
-
-
     default:
       // Peticion raiz
       // Estableciendo cabeceras
